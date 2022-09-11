@@ -43,7 +43,8 @@ for line in $IMAGES; do
         unset ARCHITECTURES
       else
         echo "No architectures found in image for image $line and PRUNE_MISSING_IMAGES is disabled, using default architectures..."
-        ARCHITECTURES="$DEFAULT_ARCHITECTURES"
+        # Make sure to use read as it obeys IFS and inputs are expected to come in as INPUT_DELIMITER
+        read -r ARCHITECTURES <<<"$DEFAULT_ARCHITECTURES"
       fi
     fi
   fi

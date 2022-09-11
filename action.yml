@@ -8,13 +8,13 @@ inputs:
     description: Remove results from images that don't exist or have no results (after querying manifest and inspecting the image)
     default: "true"
   default_architectures:
-    description: output_delimiter separated list of architectures to use if none are found or if the image doesn't exist
+    description: input_delimiter separated list of architectures to use if none are found or if the image doesn't exist
     default: linux/amd64
   debug:
     description: Enable debug logging
     default: "false"
   input_delimiter:
-    description: Delimiter to use when splitting the images input
+    description: Delimiter to use when splitting the images and default_architectures input
     default: ","
   output_delimiter:
     description: Delimiter to use when joining the architectures output

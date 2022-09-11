@@ -157,4 +157,7 @@ jobs:
         with:
           ref: ${{ steps.auto-commit-action.outputs.commit_hash }}
 
-      #- name: Create release
+      - name: Release
+        uses: K-Phoen/semver-release-action@master
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}

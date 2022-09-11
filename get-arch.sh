@@ -7,10 +7,6 @@ DEBUG="${DEBUG:-false}"
 INPUT_DELIMITER="${INPUT_DELIMITER:-,}"
 OUTPUT_DELIMITER="${OUTPUT_DELIMITER:-,}"
 
-# If the user provides stuff with newline delimiters, put in fake ones
-INPUT_DELIMITER=$(echo "${INPUT_DELIMITER}" | sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g')
-OUTPUT_DELIMITER=$(echo "${OUTPUT_DELIMITER}" | sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g')
-
 function debug() {
   if [[ "${DEBUG}" == "true" ]]; then
     echo "DEBUG: $*"

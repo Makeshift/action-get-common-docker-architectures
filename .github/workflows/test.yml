@@ -30,7 +30,7 @@ jobs:
         id: action-inputs
         uses: KJ002/read-yaml@1.6
         with:
-          path: action.yml
+          file: action.yml
           key-path: '["inputs"]'
       - name: Debug
         run: echo "${{ steps.action-inputs.outputs.data }}"

@@ -166,9 +166,8 @@ jobs:
         with:
           search_string: ${{ steps.commit_desc.outputs.value }}
           regex_pattern: "major|minor|patch"
-          regex_flags: "gim"
 
       - uses: zwaldowski/semver-release-action@v1
         with:
-          bump: ${{ steps.bump.outputs.match }}
+          bump: ${{ steps.bump.outputs.first_match }}
           github_token: ${{ secrets.GITHUB_TOKEN }}

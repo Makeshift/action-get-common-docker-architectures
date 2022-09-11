@@ -123,13 +123,14 @@ jobs:
           output_delimiter: ${{ matrix.test.output_delimiter != '' && matrix.test.output_delimiter || fromJson(needs.input_defaults.outputs.list).output_delimiter.default }}
       - name: Outputs
         run: |
+          actual_output="${{ steps.test.outputs.architectures }}"
+          expected_output="${{ matrix.test.expected_output }}"
           echo "**** Actual output ****"
-          echo "${{ steps.test.outputs.architectures }}"
+          echo "$actual_output"
           echo "**** Expected output ****"
-          echo "${{ matrix.test.expected_output }}"
-      - name: Fail
-        if: ${{ steps.test.outputs.architectures != matrix.test.expected_output }}
-        run: exit 1
+          echo "$expected_output"
+          echo "**** Diff ****"
+          diff -u <(echo "$actual_output") <(echo "$expected_output")
 
   release:
     needs: test

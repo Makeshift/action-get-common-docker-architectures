@@ -143,6 +143,10 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
+      - name: Set Commit Description
+        id: commit_desc
+        run: |
+          echo "::set-variable name=value::$(git log -1 --pretty=%B)"
       - name: Update Readme
         uses: npalm/action-docs-action@v1.2.0
         with:
@@ -150,14 +154,19 @@ jobs:
       - uses: stefanzweifel/git-auto-commit-action@v4.14.1
         id: auto-commit-action
         with:
-          commit_message: "[no ci] Update Readme (via action)"
+          commit_message: "[no ci] (docs) ${{ steps.commit_desc.outputs.value }}"
       - name: Checkout if new commit created
         if: steps.auto-commit-action.outputs.changes_detected == 'true'
         uses: actions/checkout@v3
         with:
           ref: ${{ steps.auto-commit-action.outputs.commit_hash }}
 
-      - name: Release
-        uses: K-Phoen/semver-release-action@master
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - uses: zwaldowski/match-label-action@v3
+        id: bump
+        with:
+          allowed: major, minor, patch
+
+      - uses: zwaldowski/semver-release-action@v1
+        with:
+          bump: ${{ steps.bump.outputs.match }}
+          github_token: ${{ secrets.GITHUB_TOKEN }}

@@ -92,7 +92,6 @@ jobs:
               linux/arm/v7
               linux/arm64
               linux/ppc64le
-              linux/s390x
 
           - name: "newline delimiter multi-char"
             images: |
@@ -107,7 +106,7 @@ jobs:
               linux/arm/v7 bar
               linux/arm64 bar
               linux/ppc64le bar
-              linux/s390x bar
+              linux/s390x
 
     steps:
       - name: Checkout
@@ -127,3 +126,26 @@ jobs:
       - name: Fail
         if: ${{ steps.test.outputs.architectures != matrix.test.expected_output }}
         run: exit 1
+
+  release:
+    needs: test
+    if: success() && github.ref_name == 'master'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+      - name: Update Readme
+        uses: npalm/action-docs-action@v4
+        with:
+          readme: Readme.md
+      - uses: stefanzweifel/git-auto-commit-action@v4
+        id: auto-commit-action
+        with:
+          commit_message: "[no ci] Update Readme (via action)"
+      - name: Checkout if new commit created
+        if: steps.auto-commit-action.outputs.changes_detected == 'true'
+        uses: actions/checkout@v3
+        with:
+          ref: ${{ steps.auto-commit-action.outputs.commit_hash }}
+
+      #- name: Create release

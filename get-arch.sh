@@ -54,7 +54,7 @@ for line in $IMAGES; do
   fi
   # If architectures isn't set, we can assume PRUNE_MISSING_IMAGES is enabled and we should skip this image
   if [ -n "$ARCHITECTURES" ]; then
-    echo "Architectures for image $line: $(echo "$ARCHITECTURES" | paste -s -d, -)"
+    echo "Architectures for image $line: ${ARCHITECTURES//$'\n'/, }"
     echo "$ARCHITECTURES" >"${tmpdir}"/architectures-${count}.txt
     count=$((count + 1))
   fi
@@ -73,6 +73,7 @@ for ((i = 2; i < count; i++)); do
   debug "Comparing $count: $(cat "${tmpdir}"/architectures-common.txt)"
 done
 # Output common architectures
+echo "Common architectures between all images: ${COMMON_ARCHITECTURES//$'\n'/, }"
 # what the fuck is this arcane sed syntax it took me like 30 minutes to find it why the fuck does 's/\n/,/g' not work
 COMMON_ARCHITECTURES=$(sed ':a;N;$!ba;s/\n/'"${OUTPUT_DELIMITER}"'/g' <"${tmpdir}"/architectures-common.txt)
 
@@ -81,7 +82,6 @@ COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES//'%'/'%25'}"
 COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES//$'\n'/'%0A'}"
 COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES//$'\r'/'%0D'}"
 
-echo "Common architectures between all images: ${COMMON_ARCHITECTURES}"
 echo "::set-output name=architectures::${COMMON_ARCHITECTURES}"
 # Clean up
 [ "$DEBUG" != "true" ] && rm -rf "${tmpdir}"

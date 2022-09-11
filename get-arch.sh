@@ -70,7 +70,8 @@ for ((i = 2; i < count; i++)); do
   debug "Comparing $count: $(cat "${tmpdir}"/architectures-common.txt)"
 done
 # Output common architectures
-COMMON_ARCHITECTURES=$(sed 's/\n/'"$OUTPUT_DELIMITER"'/g' <"${tmpdir}"/architectures-common.txt)
+# what the fuck is this arcane sed syntax it took me like 30 minutes to find it why the fuck does 's/\n/,/g' not work
+COMMON_ARCHITECTURES=$(sed ':a;N;$!ba;s/\n/'"${OUTPUT_DELIMITER}"'/g' <"${tmpdir}"/architectures-common.txt)
 echo "Common architectures between all images: ${COMMON_ARCHITECTURES}"
 echo "::set-output name=architectures::${COMMON_ARCHITECTURES}"
 # Clean up

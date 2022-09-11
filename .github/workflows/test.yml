@@ -164,7 +164,7 @@ jobs:
       - uses: zwaldowski/match-label-action@v3
         id: bump
         with:
-          allowed: major, minor, patch
+          allowed: major,minor,patch
 
       - uses: zwaldowski/semver-release-action@v1
         with:

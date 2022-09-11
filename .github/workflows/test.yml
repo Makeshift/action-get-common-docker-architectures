@@ -161,13 +161,26 @@ jobs:
         with:
           ref: ${{ steps.auto-commit-action.outputs.commit_hash }}
 
-      - uses: sunil-samtani/regex-action@v2
+      - name: Regex match on commit
+        uses: sunil-samtani/regex-action@v2
         id: bump
         with:
           search_string: ${{ steps.commit_desc.outputs.value }}
           regex_pattern: "major|minor|patch"
 
-      - uses: zwaldowski/semver-release-action@v1
+      - name: Increment Semver
+        uses: Benbentwo/increment-semver@1.0.4
+        id: semver
         with:
-          bump: ${{ steps.bump.outputs.first_match }}
-          github_token: ${{ secrets.GITHUB_TOKEN }}
+          version-level: ${{ steps.bump.outputs.first_match == 'patch' && '-p' || steps.bump.outputs.first_match == 'minor' && '-m' || steps.bump.outputs.first_match == 'major' && '-M' || '-p' }}
+
+      - name: Release
+        uses: "marvinpinto/action-automatic-releases@v1.2.1"
+        with:
+          repo_token: "${{ secrets.GITHUB_TOKEN }}"
+          automatic_release_tag: "v${{ steps.semver.outputs.version }}"
+          prerelease: false
+          files: |
+            action.yml
+            get-arch.sh
+            Readme.md

@@ -124,7 +124,11 @@ jobs:
       - name: Outputs
         run: |
           actual_output="${{ steps.test.outputs.architectures }}"
+          actual_output="${actual_output#"${actual_output%%[![:space:]]*}"}"
+          actual_output="${actual_output%"${actual_output##*[![:space:]]}"}"
           expected_output="${{ matrix.test.expected_output }}"
+          expected_output="${expected_output#"${expected_output%%[![:space:]]*}"}"
+          expected_output="${expected_output%"${expected_output##*[![:space:]]}"}"
           echo "**** Actual output ****"
           echo "$actual_output"
           echo "**** Expected output ****"

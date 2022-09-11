@@ -75,6 +75,12 @@ done
 # Output common architectures
 # what the fuck is this arcane sed syntax it took me like 30 minutes to find it why the fuck does 's/\n/,/g' not work
 COMMON_ARCHITECTURES=$(sed ':a;N;$!ba;s/\n/'"${OUTPUT_DELIMITER}"'/g' <"${tmpdir}"/architectures-common.txt)
+
+# Handle newlines in output delimiter by url-escaping them! https://github.com/orgs/community/discussions/26288
+COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES//'%'/'%25'}"
+COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES//$'\n'/'%0A'}"
+COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES//$'\r'/'%0D'}"
+
 echo "Common architectures between all images: ${COMMON_ARCHITECTURES}"
 echo "::set-output name=architectures::${COMMON_ARCHITECTURES}"
 # Clean up

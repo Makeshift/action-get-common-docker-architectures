@@ -44,39 +44,46 @@ jobs:
         test:
           - name: "random arch, missing images, prune on"
             images: "makeshift27015/bazarr:2b18d5b,makeshift27015/marauder_gcloud_init:2b18d5b,makeshift27015/radarr:2b18d5b,makeshift27015/rclone:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b,makeshift27015/headphones:2b18d5b,makeshift27015/lazylibrarian:2b18d5b,makeshift27015/medusa:2b18d5b,makeshift27015/mylar:2b18d5b,makeshift27015/nzbhydra2:2b18d5b,makeshift27015/sabnzbd:2b18d5b,makeshift27015/transmission:2b18d5b"
+            output_as_json: "false"
             expected_output: "linux/amd64"
 
           - name: "random arch, no missing images, minus single arch image, prune on"
             images: "makeshift27015/bazarr:2b18d5b,makeshift27015/radarr:2b18d5b,makeshift27015/rclone:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b,makeshift27015/headphones:2b18d5b,makeshift27015/lazylibrarian:2b18d5b,makeshift27015/medusa:2b18d5b,makeshift27015/mylar:2b18d5b,makeshift27015/nzbhydra2:2b18d5b,makeshift27015/sabnzbd:2b18d5b,makeshift27015/transmission:2b18d5b"
+            output_as_json: "false"
             expected_output: "linux/amd64,linux/arm64"
 
           - name: "random arch, missing images, prune off"
             images: "makeshift27015/radarr:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b"
             prune_missing_images: "false"
+            output_as_json: "false"
             expected_output: "linux/amd64,linux/arm/v7,linux/arm64"
 
           - name: "random arch, different default arch, prune off"
             images: "makeshift27015/radarr:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b"
             prune_missing_images: "false"
             default_architectures: "linux/amd64,linux/arm64"
+            output_as_json: "false"
             expected_output: "linux/amd64,linux/arm/v7,linux/arm64"
 
           - name: "random arch, missing image, different defaults, prune off"
             images: "thiscontainer/ismissing:asf,makeshift27015/radarr:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b"
             prune_missing_images: "false"
             default_architectures: "linux/amd64,linux/arm64"
+            output_as_json: "false"
             expected_output: "linux/amd64,linux/arm64"
 
           - name: "one-char delimiters, 2 images"
             images: "alpine:3.16.0 centos:centos7.9.2009"
             input_delimiter: " "
             output_delimiter: " "
+            output_as_json: "false"
             expected_output: "linux/386 linux/amd64 linux/arm/v7 linux/arm64 linux/ppc64le"
 
           - name: "multi-char delimiters"
             images: "alpine:3.16.0 foo centos:centos7.9.2009 foo debian:stable-20220822-slim"
             input_delimiter: " foo "
             output_delimiter: " bar "
+            output_as_json: "false"
             expected_output: "linux/386 bar linux/amd64 bar linux/arm/v7 bar linux/arm64 bar linux/ppc64le bar linux/s390x"
 
           - name: "newline delimiter"
@@ -86,6 +93,7 @@ jobs:
               debian:stable-20220822-slim
             input_delimiter: "\n"
             output_delimiter: "\n"
+            output_as_json: "false"
             expected_output: |
               linux/386
               linux/amd64
@@ -100,6 +108,7 @@ jobs:
               debian:stable-20220822-slim foo
             input_delimiter: " foo\n"
             output_delimiter: " bar\n"
+            output_as_json: "false"
             expected_output: |
               linux/386 bar
               linux/amd64 bar
@@ -107,6 +116,10 @@ jobs:
               linux/arm64 bar
               linux/ppc64le bar
               linux/s390x
+
+          - name: "output as json"
+            images: "alpine:3.16.0,centos:centos7.9.2009,debian:stable-20220822-slim"
+            expected_output: '["linux/386", "linux/amd64", "linux/arm/v7", "linux/arm64", "linux/ppc64le", "linux/s390x"]'
 
     steps:
       - name: Checkout
@@ -121,6 +134,7 @@ jobs:
           debug: "true"
           input_delimiter: ${{ matrix.test.input_delimiter != '' && matrix.test.input_delimiter || fromJson(needs.input_defaults.outputs.list).input_delimiter.default }}
           output_delimiter: ${{ matrix.test.output_delimiter != '' && matrix.test.output_delimiter || fromJson(needs.input_defaults.outputs.list).output_delimiter.default }}
+          output_as_json: ${{ matrix.test.output_as_json != '' && matrix.test.output_as_json || fromJson(needs.input_defaults.outputs.list).output_as_json.default }}
       - name: Outputs
         run: |
           actual_output="${{ steps.test.outputs.architectures }}"

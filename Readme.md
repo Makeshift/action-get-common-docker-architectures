@@ -4,6 +4,30 @@ Give this action a list of images, and it'll tell you what architectures they su
 
 Useful for emulating tests for a variety of images at once but only on architectures where they'll all work.
 
+## Usage
+
+```yaml
+jobs:
+  get_architectures:
+    runs-on: ubuntu-latest
+    outputs:
+      list: ${{ steps.arch.outputs.list }}
+    steps:
+      - uses: Makeshift/get-common-docker-architectures@master
+        id: arch
+        with:
+          images: alpine:3.16.0,centos:centos7.9.2009,debian:stable-20220822-slim
+    
+  run_on_each_arch:
+    runs-on: ubuntu-latest
+    needs: get_architectures
+    strategy:
+      matrix:
+        arch: ${{ fromJson(need.get_architectures.outputs.list) }}
+    steps:
+      - run: echo "${{ matrix.arch }}"
+```
+
 <!-- action-docs-inputs -->
 ## Inputs
 

@@ -6,6 +6,7 @@ DEFAULT_ARCHITECTURES="${DEFAULT_ARCHITECTURES:-linux/amd64}"
 DEBUG="${DEBUG:-false}"
 INPUT_DELIMITER="${INPUT_DELIMITER:-,}"
 OUTPUT_DELIMITER="${OUTPUT_DELIMITER:-,}"
+OUTPUT_AS_JSON="${OUTPUT_AS_JSON:-true}"
 
 # Handle newlines in output delimiter
 OUTPUT_DELIMITER=$(echo "${OUTPUT_DELIMITER}" | sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g')
@@ -74,17 +75,21 @@ for ((i = 2; i < count; i++)); do
 done
 # Output common architectures
 echo "Common architectures between all images: ${COMMON_ARCHITECTURES//$'\n'/, }"
-# what the fuck is this arcane sed syntax it took me like 30 minutes to find it why the fuck does 's/\n/,/g' not work
-COMMON_ARCHITECTURES=$(sed ':a;N;$!ba;s/\n/'"${OUTPUT_DELIMITER}"'/g' <"${tmpdir}"/architectures-common.txt)
 
-# Handle newlines in output delimiter by url-escaping them! https://github.com/orgs/community/discussions/26288
-COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES//'%'/'%25'}"
-COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES//$'\n'/'%0A'}"
-COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES//$'\r'/'%0D'}"
-# And finally, trim
-COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES#"${COMMON_ARCHITECTURES%%[![:space:]]*}"}"
-COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES%"${COMMON_ARCHITECTURES##*[![:space:]]}"}"
+if [[ "$OUTPUT_AS_JSON" != "true" ]]; then
+  # what the fuck is this arcane sed syntax it took me like 30 minutes to find it why the fuck does 's/\n/,/g' not work
+  COMMON_ARCHITECTURES=$(sed ':a;N;$!ba;s/\n/'"${OUTPUT_DELIMITER}"'/g' <"${tmpdir}"/architectures-common.txt)
 
+  # Handle newlines in output delimiter by url-escaping them! https://github.com/orgs/community/discussions/26288
+  COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES//'%'/'%25'}"
+  COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES//$'\n'/'%0A'}"
+  COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES//$'\r'/'%0D'}"
+  # And finally, trim
+  COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES#"${COMMON_ARCHITECTURES%%[![:space:]]*}"}"
+  COMMON_ARCHITECTURES="${COMMON_ARCHITECTURES%"${COMMON_ARCHITECTURES##*[![:space:]]}"}"
+else
+  COMMON_ARCHITECTURES=$(jq -Rsc 'split("\n") | [.[] | select(length > 0)]' <"${tmpdir}"/architectures-common.txt)
+fi
 echo "::set-output name=architectures::${COMMON_ARCHITECTURES}"
 # Clean up
 [ "$DEBUG" != "true" ] && rm -rf "${tmpdir}"

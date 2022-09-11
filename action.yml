@@ -19,6 +19,9 @@ inputs:
   output_delimiter:
     description: Delimiter to use when joining the architectures output
     default: ","
+  output_as_json:
+    description: Output the architectures as a JSON string instead of using output_delimiter
+    default: "true"
 
 outputs:
   architectures:
@@ -39,3 +42,4 @@ runs:
         DEBUG: ${{ inputs.debug }}
         INPUT_DELIMITER: ${{ inputs.input_delimiter }}
         OUTPUT_DELIMITER: ${{ inputs.output_delimiter }}
+        OUTPUT_AS_JSON: ${{ inputs.output_as_json }}

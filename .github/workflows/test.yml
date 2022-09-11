@@ -122,7 +122,11 @@ jobs:
           input_delimiter: ${{ matrix.test.input_delimiter != '' && matrix.test.input_delimiter || fromJson(needs.input_defaults.outputs.list).input_delimiter.default }}
           output_delimiter: ${{ matrix.test.output_delimiter != '' && matrix.test.output_delimiter || fromJson(needs.input_defaults.outputs.list).output_delimiter.default }}
       - name: Outputs
-        run: echo "${{ steps.test.outputs.architectures }}"
+        run: |
+          echo "**** Actual output ****"
+          echo "${{ steps.test.outputs.architectures }}"
+          echo "**** Expected output ****"
+          echo "${{ matrix.test.expected_output }}"
       - name: Fail
         if: ${{ steps.test.outputs.architectures != matrix.test.expected_output }}
         run: exit 1

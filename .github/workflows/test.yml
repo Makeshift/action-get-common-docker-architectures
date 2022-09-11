@@ -44,49 +44,55 @@ jobs:
         test:
           - name: "random arch, missing images, prune on"
             images: "makeshift27015/bazarr:2b18d5b,makeshift27015/marauder_gcloud_init:2b18d5b,makeshift27015/radarr:2b18d5b,makeshift27015/rclone:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b,makeshift27015/headphones:2b18d5b,makeshift27015/lazylibrarian:2b18d5b,makeshift27015/medusa:2b18d5b,makeshift27015/mylar:2b18d5b,makeshift27015/nzbhydra2:2b18d5b,makeshift27015/sabnzbd:2b18d5b,makeshift27015/transmission:2b18d5b"
-            expected_output: "linux/amd64" #correct
+            expected_output: "linux/amd64"
 
           - name: "random arch, no missing images, minus single arch image, prune on"
             images: "makeshift27015/bazarr:2b18d5b,makeshift27015/radarr:2b18d5b,makeshift27015/rclone:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b,makeshift27015/headphones:2b18d5b,makeshift27015/lazylibrarian:2b18d5b,makeshift27015/medusa:2b18d5b,makeshift27015/mylar:2b18d5b,makeshift27015/nzbhydra2:2b18d5b,makeshift27015/sabnzbd:2b18d5b,makeshift27015/transmission:2b18d5b"
-            expected_output: "linux/amd64,linux/arm64" #correct
+            expected_output: "linux/amd64,linux/arm64"
 
           - name: "random arch, missing images, prune off"
             images: "makeshift27015/radarr:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b"
             prune_missing_images: "false"
-            expected_output: "linux/amd64,linux/arm/v7,linux/arm64" #correct
+            expected_output: "linux/amd64,linux/arm/v7,linux/arm64"
 
           - name: "random arch, different default arch, prune off"
             images: "makeshift27015/radarr:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b"
             prune_missing_images: "false"
             default_architectures: "linux/amd64,linux/arm64"
-            expected_output: "linux/amd64,linux/arm/v7,linux/arm64" # correct
+            expected_output: "linux/amd64,linux/arm/v7,linux/arm64"
 
           - name: "random arch, missing image, different defaults, prune off"
             images: "thiscontainer/ismissing:asf,makeshift27015/radarr:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b"
             prune_missing_images: "false"
             default_architectures: "linux/amd64,linux/arm64"
-            expected_output: "linux/amd64,linux/arm64" # wrong
+            expected_output: "linux/amd64,linux/arm64"
 
           - name: "one-char delimiters, 2 images"
             images: "alpine:3.16.0 centos:centos7.9.2009"
             input_delimiter: " "
             output_delimiter: " "
-            expected_output: "linux/386 linux/amd64 linux/arm/v7 linux/arm64 linux/ppc64le" #correct
+            expected_output: "linux/386 linux/amd64 linux/arm/v7 linux/arm64 linux/ppc64le"
 
           - name: "multi-char delimiters"
             images: "alpine:3.16.0 foo centos:centos7.9.2009 foo debian:stable-20220822-slim"
-            input_delimiter: " foo " # this works
-            output_delimiter: " bar " # this doesn't
-            expected_output: "" # wrong
+            input_delimiter: " foo "
+            output_delimiter: " bar "
+            expected_output: "linux/386 bar linux/amd64 bar linux/arm/v7 bar linux/arm64 bar linux/ppc64le bar linux/s390x"
 
           - name: "newline delimiter"
-            images: >
+            images: |
               alpine:3.16.0
               centos:centos7.9.2009
               debian:stable-20220822-slim
             input_delimiter: "\n" # doesn't work
             output_delimiter: "\n" # unknown
-            expected_output: "" # wrong
+            expected_output: |
+              linux/386
+              linux/amd64
+              linux/arm/v7
+              linux/arm64
+              linux/ppc64le
+              linux/s390x
 
     steps:
       - name: Checkout

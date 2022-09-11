@@ -1,0 +1,41 @@
+name: Get Common Architectures from Docker Containers
+description: Get a list of common architectures from a list of Docker images
+inputs:
+  images:
+    description: input_delimiter separated list of Docker images to get architectures from
+    required: true
+  prune_missing_images:
+    description: Remove results from images that don't exist or have no results (after querying manifest and inspecting the image)
+    default: "true"
+  default_architectures:
+    description: output_delimiter separated list of architectures to use if none are found or if the image doesn't exist
+    default: linux/amd64
+  debug:
+    description: Enable debug logging
+    default: "false"
+  input_delimiter:
+    description: Delimiter to use when splitting the images input
+    default: ","
+  output_delimiter:
+    description: Delimiter to use when joining the architectures output
+    default: ","
+
+outputs:
+  architectures:
+    description: output_delimiter separated list of architectures common between all images
+    value: ${{ steps.get-architectures.outputs.architectures }}
+
+runs:
+  using: composite
+  steps:
+    - name: Get Architectures
+      id: get-architectures
+      shell: bash
+      run: ./get-arch.sh
+      env:
+        IMAGES: ${{ inputs.images }}
+        PRUNE_MISSING_IMAGES: ${{ inputs.prune_missing_images }}
+        DEFAULT_ARCHITECTURES: ${{ inputs.default_architectures }}
+        DEBUG: ${{ inputs.debug }}
+        INPUT_DELIMITER: ${{ inputs.input_delimiter }}
+        OUTPUT_DELIMITER: ${{ inputs.output_delimiter }}

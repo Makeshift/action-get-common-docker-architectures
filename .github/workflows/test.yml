@@ -1,0 +1,68 @@
+name: Test action and release if outputs are as expected
+
+on:
+  push:
+    branches:
+      - master
+  repository_dispatch:
+  workflow_dispatch:
+
+#IMAGES="makeshift27015/bazarr:2b18d5b,makeshift27015/marauder_gcloud_init:2b18d5b,makeshift27015/radarr:2b18d5b,makeshift27015/rclone:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b,makeshift27015/headphones:2b18d5b,makeshift27015/lazylibrarian:2b18d5b,makeshift27015/medusa:2b18d5b,makeshift27015/mylar:2b18d5b,makeshift27015/nzbhydra2:2b18d5b,makeshift27015/sabnzbd:2b18d5b,makeshift27015/transmission:2b18d5b"
+#IMAGES="makeshift27015/radarr:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b"
+
+jobs:
+  cancel_redundant:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Cancel Previous Runs
+        uses: styfle/cancel-workflow-action@0.6.0
+        with:
+          access_token: ${{ github.token }}
+
+  input_defaults:
+    runs-on: ubuntu-latest
+    outputs:
+      list: ${{ steps.action-inputs.outputs.data }}
+    steps:
+      - name: Read action.yml
+        id: action-inputs
+        uses: KJ002/read-yaml@1.6
+        with:
+          path: action.yml
+          key-path: '["inputs"]'
+      - name: Debug
+        run: echo "${{ steps.action-inputs.outputs.data }}"
+
+  # test:
+  #   runs-on: ubuntu-latest
+  #   needs: input_defaults
+  #   strategy:
+  #     fail-fast: false
+  #     matrix:
+
+  #       test:
+  #         - name: "Test 1"
+  #           images: "makeshift27015/bazarr:2b18d5b,makeshift27015/marauder_gcloud_init:2b18d5b,makeshift27015/radarr:2b18d5b,makeshift27015/rclone:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b,makeshift27015/headphones:2b18d5b,makeshift27015/lazylibrarian:2b18d5b,makeshift27015/medusa:2b18d5b,makeshift27015/mylar:2b18d5b,makeshift27015/nzbhydra2:2b18d5b,makeshift27015/sabnzbd:2b18d5b,makeshift27015/transmission:2b18d5b"
+  #           prune_missing_images: "false"
+
+  #         - name: "Test 2"
+  #           images: "makeshift27015/radarr:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b"
+
+  #         - name: "Test 3"
+  #           images: "alpine:3.12.0 alpine:3.12.1"
+  #           input_delimiter: " "
+  #           output_delimiter: " "
+
+  #   steps:
+  #     - name: Checkout
+  #       uses: actions/checkout@v2
+  #     - name: Test 1
+  #       uses: ./ # Uses an action in the root directory
+  #       id: test
+  #       with:
+  #         images: ${{ matrix.test.images != '' && matrix.test.images ||  }}
+  #         prune_missing_images: ${{ matrix.test.prune_missing_images != '' && matrix.test.prune_missing_images ||  }}
+  #         default_architectures: ${{ matrix.test.default_architectures != '' && matrix.test.default_architectures ||  }}
+  #         debug: ${{ matrix.test.debug != '' && matrix.test.debug ||  }}
+  #         input_delimiter: ${{ matrix.test.input_delimiter != '' && matrix.test.input_delimiter ||  }}
+  #         output_delimiter: ${{ matrix.test.output_delimiter != '' && matrix.test.output_delimiter ||  }}

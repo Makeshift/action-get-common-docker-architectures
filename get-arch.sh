@@ -52,7 +52,6 @@ for line in $IMAGES; do
   if [ -n "$ARCHITECTURES" ]; then
     echo "Architectures for image $line: $(echo "$ARCHITECTURES" | paste -s -d, -)"
     echo "$ARCHITECTURES" >"${tmpdir}"/architectures-${count}.txt
-    debug "Architectures for image $line: $(cat "${tmpdir}"/architectures-${count}.txt)"
     count=$((count + 1))
   fi
 done
@@ -61,7 +60,7 @@ unset IFS
 for file in "${tmpdir}"/architectures-*.txt; do
   sort -u "${file}" >"${file}.tmp" && mv "${file}.tmp" "${file}"
 done
-debug "Sorted architectures: $(cat "${tmpdir}"/architectures-*.txt)"
+debug "Sorted architectures: $(tail "${tmpdir}"/architectures-*.txt)"
 # Find common lines between all lists
 comm -12 "${tmpdir}"/architectures-0.txt "${tmpdir}"/architectures-1.txt >"${tmpdir}"/architectures-common.txt
 for ((i = 2; i < count; i++)); do

@@ -94,6 +94,21 @@ jobs:
               linux/ppc64le
               linux/s390x
 
+          - name: "newline delimiter multi-char"
+            images: |
+              alpine:3.16.0 foo
+              centos:centos7.9.2009 foo
+              debian:stable-20220822-slim foo
+            input_delimiter: " foo\n"
+            output_delimiter: " bar\n"
+            expected_output: |
+              linux/386 bar
+              linux/amd64 bar
+              linux/arm/v7 bar
+              linux/arm64 bar
+              linux/ppc64le bar
+              linux/s390x bar
+
     steps:
       - name: Checkout
         uses: actions/checkout@v3

@@ -161,7 +161,7 @@ jobs:
         with:
           ref: ${{ steps.auto-commit-action.outputs.commit_hash }}
 
-      - uses: AsasInnab/regex-action@v2
+      - uses: sunil-samtani/regex-action@v2
         id: bump
         with:
           search_string: ${{ steps.commit_desc.outputs.value }}

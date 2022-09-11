@@ -75,3 +75,4 @@ echo "Common architectures between all images: ${COMMON_ARCHITECTURES}"
 echo "::set-output name=architectures::${COMMON_ARCHITECTURES}"
 # Clean up
 [ "$DEBUG" != "true" ] && rm -rf "${tmpdir}"
+exit 0

@@ -65,7 +65,7 @@ jobs:
             images: "thiscontainer/ismissing:asf,makeshift27015/radarr:2b18d5b,makeshift27015/marauder_rclone_generate_keys:2b18d5b,makeshift27015/sonarr:2b18d5b,makeshift27015/traktarr:2b18d5b"
             prune_missing_images: "false"
             default_architectures: "linux/amd64,linux/arm64"
-            expected_output: "linux/amd64,linux/arm64" # untested
+            expected_output: "linux/amd64,linux/arm64" # wrong
 
           - name: "one-char delimiters, 2 images"
             images: "alpine:3.16.0 centos:centos7.9.2009"

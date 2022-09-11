@@ -43,7 +43,9 @@ for line in $IMAGES; do
         unset ARCHITECTURES
       else
         echo "No architectures found in image for image $line and PRUNE_MISSING_IMAGES is disabled, using default architectures..."
-        ARCHITECTURES=${DEFAULT_ARCHITECTURES//$IFS/\\n}
+        # No, bad shellcheck, bash replace is dumb
+        # shellcheck disable=SC2001
+        ARCHITECTURES=$(echo "$DEFAULT_ARCHITECTURES" | sed 's/'"$IFS"'/\n/g')
       fi
     fi
   fi
@@ -68,7 +70,7 @@ for ((i = 2; i < count; i++)); do
   debug "Comparing $count: $(cat "${tmpdir}"/architectures-common.txt)"
 done
 # Output common architectures
-COMMON_ARCHITECTURES=$(paste -s -d"${OUTPUT_DELIMITER}" - <"${tmpdir}"/architectures-common.txt)
+COMMON_ARCHITECTURES=$(sed 's/\n/'"$OUTPUT_DELIMITER"'/g' <"${tmpdir}"/architectures-common.txt)
 echo "Common architectures between all images: ${COMMON_ARCHITECTURES}"
 echo "::set-output name=architectures::${COMMON_ARCHITECTURES}"
 # Clean up

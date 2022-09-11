@@ -7,6 +7,9 @@ DEBUG="${DEBUG:-false}"
 INPUT_DELIMITER="${INPUT_DELIMITER:-,}"
 OUTPUT_DELIMITER="${OUTPUT_DELIMITER:-,}"
 
+# Handle newlines in output delimiter
+OUTPUT_DELIMITER=$(echo "${OUTPUT_DELIMITER}" | sed -E ':a;N;$!ba;s/\r{0,1}\n/\\n/g')
+
 function debug() {
   if [[ "${DEBUG}" == "true" ]]; then
     echo "DEBUG: $*"

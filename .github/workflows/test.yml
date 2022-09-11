@@ -161,10 +161,12 @@ jobs:
         with:
           ref: ${{ steps.auto-commit-action.outputs.commit_hash }}
 
-      - uses: zwaldowski/match-label-action@v3
+      - uses: AsasInnab/regex-action@v2
         id: bump
         with:
-          allowed: major,minor,patch
+          search_string: ${{ steps.commit_desc.outputs.value }}
+          regex_pattern: "major|minor|patch"
+          regex_flags: "gim"
 
       - uses: zwaldowski/semver-release-action@v1
         with:

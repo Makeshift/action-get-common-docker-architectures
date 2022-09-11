@@ -22,7 +22,7 @@ function echoInputs() {
   echo "OUTPUT_DELIMITER: ${OUTPUT_DELIMITER}"
 }
 
-[ "$DEBUG" == "true" ] && echoInputs
+[ "$DEBUG" == "true" ] && echoInputs && set -x
 
 set +e
 tmpdir=$(mktemp -d)

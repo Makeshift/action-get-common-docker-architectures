@@ -31,7 +31,7 @@ runs:
     - name: Get Architectures
       id: get-architectures
       shell: bash
-      run: ./get-arch.sh
+      run: ${{ github.action_path }}/get-arch.sh
       env:
         IMAGES: ${{ inputs.images }}
         PRUNE_MISSING_IMAGES: ${{ inputs.prune_missing_images }}

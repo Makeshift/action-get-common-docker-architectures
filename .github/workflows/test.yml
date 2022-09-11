@@ -143,46 +143,6 @@ jobs:
     steps:
       - name: Checkout
         uses: actions/checkout@v3
-      - name: Set Commit Description
-        id: commit_desc
-        run: |
-          echo "::set-output name=value::$(git log -1 --pretty=%B)"
-          # Git doing dubious ownership stuff again
-          git config --global --add safe.directory /github/workspace
-      - name: Update Readme
-        uses: npalm/action-docs-action@v1.2.0
-        with:
-          readme: Readme.md
-      - uses: stefanzweifel/git-auto-commit-action@v4.14.1
-        id: auto-commit-action
-        with:
-          commit_message: "[no ci] (docs) ${{ steps.commit_desc.outputs.value }}"
-      - name: Checkout if new commit created
-        if: steps.auto-commit-action.outputs.changes_detected == 'true'
-        uses: actions/checkout@v3
-        with:
-          ref: ${{ steps.auto-commit-action.outputs.commit_hash }}
 
-      - name: Regex match on commit
-        uses: sunil-samtani/regex-action@v2
-        id: bump
-        with:
-          search_string: ${{ steps.commit_desc.outputs.value }}
-          regex_pattern: "major|minor|patch"
-
-      - name: Increment Semver
-        uses: Makeshift/increment-semver@v0.1.3
-        id: semver
-        with:
-          version-level: ${{ contains(fromJson('["major", "minor", "patch"]'), steps.bump.outputs.first_match) || 'patch' }}
-
-      - name: Release
-        uses: marvinpinto/action-automatic-releases@v1.2.1
-        with:
-          repo_token: "${{ secrets.GITHUB_TOKEN }}"
-          automatic_release_tag: ${{ steps.semver.outputs.version }}
-          prerelease: false
-          files: |
-            action.yml
-            get-arch.sh
-            Readme.md
+      - name: Do release
+        uses: Makeshift/semver-release-action@master

@@ -21,6 +21,6 @@ jobs:
     needs: get_architectures
     strategy:
       matrix:
-        arch: ${{ fromJson(need.get_architectures.outputs.list) }}
+        arch: ${{ fromJson(needs.get_architectures.outputs.list) }}
     steps:
       - run: echo "${{ matrix.arch }}"

@@ -24,6 +24,8 @@ jobs:
     outputs:
       list: ${{ steps.action-inputs.outputs.data }}
     steps:
+      - name: Checkout
+        uses: actions/checkout@v3
       - name: Read action.yml
         id: action-inputs
         uses: KJ002/read-yaml@1.6
@@ -55,7 +57,7 @@ jobs:
 
   #   steps:
   #     - name: Checkout
-  #       uses: actions/checkout@v2
+  #       uses: actions/checkout@v3
   #     - name: Test 1
   #       uses: ./ # Uses an action in the root directory
   #       id: test

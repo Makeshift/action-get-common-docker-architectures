@@ -84,8 +84,8 @@ jobs:
               alpine:3.16.0
               centos:centos7.9.2009
               debian:stable-20220822-slim
-            input_delimiter: "\n" # doesn't work
-            output_delimiter: "\n" # unknown
+            input_delimiter: "\n"
+            output_delimiter: "\n"
             expected_output: |
               linux/386
               linux/amd64
@@ -109,3 +109,6 @@ jobs:
           output_delimiter: ${{ matrix.test.output_delimiter != '' && matrix.test.output_delimiter || fromJson(needs.input_defaults.outputs.list).output_delimiter.default }}
       - name: Outputs
         run: echo "${{ steps.test.outputs.architectures }}"
+      - name: Fail
+        if: ${{ steps.test.outputs.architectures != matrix.test.expected_output }}
+        run: exit 1

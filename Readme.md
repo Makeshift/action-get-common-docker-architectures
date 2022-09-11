@@ -30,11 +30,3 @@ Useful for emulating tests for a variety of images at once but only on architect
 
 
 <!-- action-docs-outputs -->
-
-<!-- action-docs-runs -->
-## Runs
-
-This action is a `composite` action.
-
-
-<!-- action-docs-runs -->

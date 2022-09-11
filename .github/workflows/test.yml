@@ -147,6 +147,8 @@ jobs:
         id: commit_desc
         run: |
           echo "::set-output name=value::$(git log -1 --pretty=%B)"
+          # Git doing dubious ownership stuff again
+          git config --global --add safe.directory /github/workspace
       - name: Update Readme
         uses: npalm/action-docs-action@v1.2.0
         with:
